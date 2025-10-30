@@ -13,18 +13,18 @@ const Hero = () => {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6 animate-fade-in">
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight text-foreground">
-              Establishing a Next-Generation{" "}
-              <span className="text-secondary">Global Digital Payment Network</span>
+              构建下一代{" "}
+              <span className="text-secondary">全球数字支付网络</span>
             </h1>
             <p className="text-xl text-muted-foreground">
-              To facilitate Cross-Border Transaction
+              促进跨境交易便捷化
             </p>
           </div>
           
           <div className="relative animate-float">
             <img 
               src={heroWhale} 
-              alt="Futuristic digital whale representing global payment network" 
+              alt="代表全球支付网络的未来数字鲸鱼" 
               className="w-full h-auto drop-shadow-2xl"
             />
           </div>

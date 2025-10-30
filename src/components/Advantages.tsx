@@ -1,19 +1,19 @@
 const advantages = [
   {
-    title: "Industry Focus",
-    points: ["Cross-Border B2B", "Entertainment", "Advertising", "Web3"],
+    title: "行业聚焦",
+    points: ["跨境B2B", "娱乐", "广告", "Web3"],
   },
   {
-    title: "Trustworthy",
-    points: ["Licensed", "Compliant", "Security Assurance", "Full Chain Protection"],
+    title: "值得信赖",
+    points: ["持牌合规", "安全保障", "全链路防护", "风险管控"],
   },
   {
-    title: "Efficient and Convenient",
-    points: ["All-in-one Platform", "User-Friendly", "Web2+Web3 Integrated"],
+    title: "高效便捷",
+    points: ["一站式平台", "用户友好", "Web2+Web3集成"],
   },
   {
-    title: "Customer Centric",
-    points: ["24/7 Support", "Advisory-Style", "Customer Service"],
+    title: "客户至上",
+    points: ["7×24小时支持", "顾问式服务", "专属客服"],
   },
 ];
 
@@ -23,7 +23,7 @@ const Advantages = () => {
       <div className="container mx-auto px-6">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-            Four Major Advantages for Our Clients
+            为客户提供四大优势
           </h2>
         </div>
 
