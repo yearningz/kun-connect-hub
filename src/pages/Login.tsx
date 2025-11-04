@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff } from "lucide-react";
+import {AuthService} from "@/api";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -19,7 +20,7 @@ const Login = () => {
     setIsLoading(true);
 
     // 模拟登录 - 实际应用需要后端API
-    setTimeout(() => {
+    /*setTimeout(() => {
       if (email && password) {
         toast({
           title: "登录成功",
@@ -34,7 +35,23 @@ const Login = () => {
         });
       }
       setIsLoading(false);
-    }, 1000);
+    }, 1000);*/
+    try {
+      const response = await AuthService.login({
+        /*email: 'user@example.com',
+        password: 'password'*/
+        phoneNumber: "13800138000",
+        areaCode: "86"
+      });
+
+      if (response.success) {
+        setIsLoading(false);
+        // 登录成功，保存 token
+        localStorage.setItem('auth_token', response.data.token);
+      }
+    } catch (error) {
+      // 错误已由拦截器统一处理
+    }
   };
 
   return (
