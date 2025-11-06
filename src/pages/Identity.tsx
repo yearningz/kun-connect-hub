@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,12 +59,19 @@ const Identity = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 px-4 py-8">
       <div className="container max-w-3xl mx-auto">
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-block">
-            <h1 className="text-3xl font-bold mb-2">KUN Global</h1>
-          </Link>
-          <p className="text-muted-foreground">身份认证</p>
-        </div>
+        {/* 顶部导航栏 */}
+        <header style={styles.header}>
+          <div style={styles.logo}>KUN</div>
+          <nav style={styles.nav}>
+            <a href="#" style={{...styles.navLink, ...styles.activeNavLink}}>总览</a>
+            <a href="#" style={styles.navLink}>账户</a>
+            <a href="#" style={styles.navLink}>交易</a>
+            <a href="#" style={styles.navLink}>支付</a>
+            <a href="#" style={styles.navLink}>理财</a>
+            <a href="#" style={styles.navLink}>工具箱</a>
+            {/*<div style={styles.userIcon} onClick={handleUserIconClick}>👤</div>*/}
+          </nav>
+        </header>
 
         <div className="bg-card border rounded-lg shadow-lg p-8">
           <div className="mb-6">
@@ -213,5 +220,44 @@ const Identity = () => {
     </div>
   );
 };
+
+const styles: { [key: string]: React.CSSProperties } = {
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '16px 24px',
+    backgroundColor: 'white',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+  },
+  logo: {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: '#1890ff',
+  },
+  nav: {
+    display: 'flex',
+    gap: '32px',
+    justifyContent: 'flex-start',
+    flex: 1,
+    marginLeft: '200px',
+  },
+  navLink: {
+    textDecoration: 'none',
+    color: '#666',
+    fontSize: '16px',
+    padding: '8px 0',
+  },
+  userIcon: {
+    cursor: 'pointer',
+    fontSize: '20px',
+    marginLeft: 'auto',
+    padding: '8px 0',
+  },
+  activeNavLink: {
+    color: '#1890ff',
+    borderBottom: '2px solid #1890ff',
+  },
+}
 
 export default Identity;

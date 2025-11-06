@@ -20,13 +20,13 @@ const Login = () => {
     setIsLoading(true);
 
     // 模拟登录 - 实际应用需要后端API
-    /*setTimeout(() => {
+    setTimeout(() => {
       if (email && password) {
         toast({
           title: "登录成功",
           description: "欢迎回来！",
         });
-        navigate("/");
+        navigate("/main");
       } else {
         toast({
           title: "登录失败",
@@ -35,8 +35,8 @@ const Login = () => {
         });
       }
       setIsLoading(false);
-    }, 1000);*/
-    try {
+    }, 1000);
+    /*try {
       const response = await AuthService.login({
         email:"user@example.com",
         password: "password123"
@@ -55,7 +55,7 @@ const Login = () => {
     } catch (error) {
       setIsLoading(false);
       // 错误已由拦截器统一处理
-    }
+    }*/
   };
 
   return (
