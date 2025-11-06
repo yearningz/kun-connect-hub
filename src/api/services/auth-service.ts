@@ -54,8 +54,8 @@ export class AuthService {
   /**
    * 用户登录
    */
-  static async login(data: LoginRequest1): Promise<BaseResponse<LoginResponse>> {
-    return httpClient.post<LoginResponse>('v1/auth/sendSmsCode', data, {
+  static async login(data: LoginRequest): Promise<BaseResponse<LoginResponse>> {
+    return httpClient.post<LoginResponse>('/api/user', data, {
       showLoading: true,
       showError: true,
     });

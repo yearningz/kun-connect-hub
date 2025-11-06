@@ -38,18 +38,22 @@ const Login = () => {
     }, 1000);*/
     try {
       const response = await AuthService.login({
-        /*email: 'user@example.com',
-        password: 'password'*/
-        phoneNumber: "13800138000",
-        areaCode: "86"
+        email:"user@example.com",
+        password: "password123"
       });
 
       if (response.success) {
         setIsLoading(false);
         // 登录成功，保存 token
         localStorage.setItem('auth_token', response.data.token);
+        toast({
+          title: "登录成功",
+          description: "欢迎回来！",
+        });
+        navigate("/");
       }
     } catch (error) {
+      setIsLoading(false);
       // 错误已由拦截器统一处理
     }
   };

@@ -24,7 +24,8 @@ class HttpClient {
   private baseURL: string;
 
   constructor(baseURL?: string) {
-    this.baseURL = "http://dev-cn.your-api-server.com/api";
+    //this.baseURL = "http://dev-cn.your-api-server.com/api";
+    this.baseURL = "http://127.0.0.1:4523/m1/7353622-7084427-default/"
 
     this.instance = axios.create({
       baseURL: this.baseURL,
