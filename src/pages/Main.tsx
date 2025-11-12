@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import {useNavigate} from "react-router-dom";
 
 // 定义类型
@@ -43,6 +44,11 @@ const Main: React.FC = () => {
     //console.log('用户图标被点击');
     navigate('/identity');
     // 这里可以添加点击后的逻辑，例如跳转到用户页面或显示用户菜单
+  };
+
+  const handleOpenButtonClick = () => {
+    alert('开通按钮被点击');
+    // 添加你的逻辑，例如跳转页面或调用 API
   };
 
   const [currencyRates, setCurrencyRates] = useState<CurrencyRate[]>([]);
@@ -205,6 +211,7 @@ const Main: React.FC = () => {
                       <span style={styles.accountLabel}>收款方式:</span>
                       <span>{account.paymentMethod}</span>
                     </div>
+                    <button style={styles.openButton} onClick={handleOpenButtonClick}>开通</button>
                   </div>
                 </div>
               ))}
@@ -225,7 +232,8 @@ const Main: React.FC = () => {
                 <p style={styles.balanceHint}>
                   您可以通过法币或者数字货币进行充值
                 </p>
-                <button style={styles.rechargeButton}>充值</button>
+                <button style={styles.rechargeButton} onClick={() => navigate('/recharge')}>充值</button>
+                <button style={styles.transferButton} onClick={() => navigate('/transfer')}>转账</button>
               </div>
 
               <div style={styles.limitCard}>
@@ -432,6 +440,16 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: '14px',
     cursor: 'pointer',
   },
+  transferButton: {
+    backgroundColor: '#1890ff',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    padding: '10px 20px',
+    fontSize: '14px',
+    cursor: 'pointer',
+    marginLeft: '20px',
+  },
   limitHeader: {
     marginBottom: '16px',
   },
@@ -624,6 +642,20 @@ const styles: { [key: string]: React.CSSProperties } = {
     borderRadius: '4px',
     fontSize: '14px',
     color: '#1890ff',
+  },
+  openButton: {
+    backgroundColor: '#1890ff',
+    color: 'white',
+    border: 'none',
+    borderRadius: '4px',
+    padding: '8px 16px',
+    fontSize: '14px',
+    cursor: 'pointer',
+    marginTop: '12px',
+    transition: 'background-color 0.2s',
+    '&:hover': {
+      backgroundColor: '#40a9ff',
+    },
   },
 };
 

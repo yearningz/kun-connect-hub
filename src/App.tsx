@@ -9,6 +9,8 @@ import Register from "./pages/Register";
 import Identity from "./pages/Identity";
 import NotFound from "./pages/NotFound";
 import Main from "./pages/Main";
+import Recharge from "./pages/Recharge";
+import Transfer from "@/pages/Transfer.tsx";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +26,8 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/identity" element={<Identity />} />
           <Route path="/main" element={<Main />} />
+          <Route path="/recharge" element={<Recharge />} />
+          <Route path="/transfer" element={<Transfer />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
