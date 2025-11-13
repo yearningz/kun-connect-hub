@@ -133,6 +133,18 @@ const Recharge: React.FC = () => {
                 <option value="ETH_ERC20">ETH_ERC20</option>
                 <option value="TRX_ERC20">TRX_ERC20</option>
               </select>
+              {/* 充值地址模块 */}
+              {selectedNetwork && (
+                <div style={styles.addressContainer}>
+                  <div style={styles.addressLabel}>充值地址</div>
+                  <div style={styles.addressValue}>xxxxxxxxxxxx</div>
+                  <div style={styles.tip}>最小充值数: 200.00 USDT</div>
+                  <div style={styles.tip}>预计到账: 12次网络确认</div>
+                  <div style={styles.warning}>
+                    此地址只可接收 {selectedCurrency}，请确认主网络是 {selectedNetwork}
+                  </div>
+                </div>
+              )}
             </div>
           </>
         ) : (
@@ -346,6 +358,35 @@ disabledButton: {
   color: '#999',
     borderColor: '#999',
     cursor: 'not-allowed',
+},
+addressContainer: {
+  marginTop: '16px',
+  padding: '16px',
+  backgroundColor: '#f9f9f9',
+  borderRadius: '4px',
+  border: '1px solid #e8e8e8',
+},
+addressLabel: {
+  fontWeight: '500',
+  marginBottom: '8px',
+  color: '#333',
+  fontSize: '16px',
+},
+addressValue: {
+  fontFamily: 'monospace',
+  marginBottom: '16px',
+  color: '#1890ff',
+  fontSize: '16px',
+},
+tip: {
+  fontSize: '14px',
+  color: '#666',
+  marginBottom: '8px',
+},
+warning: {
+  fontSize: '14px',
+  color: '#f00',
+  marginBottom: '16px',
 },
 };
 
