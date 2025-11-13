@@ -448,7 +448,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: '10px 20px',
     fontSize: '14px',
     cursor: 'pointer',
-    marginLeft: '20px',
+    marginLeft: '40px',
   },
   limitHeader: {
     marginBottom: '16px',
