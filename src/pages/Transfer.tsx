@@ -33,13 +33,24 @@ const Transfer: React.FC = () => {
   // 转账页面专属状态
   const [currentStep, setCurrentStep] = useState(2); // 1=选择账户；2=输入金额；3=确认信息
   const [transferAmount, setTransferAmount] = useState('100.00');
-  const [fee, setFee] = useState('20.00');
-  const [actualAmount, setActualAmount] = useState('80.00');
+  const [fee, setFee] = useState('2.00');
+  const [actualAmount, setActualAmount] = useState('98.00');
+
+  const handleTransferAmountChange = (value: string) => {
+    setTransferAmount(value);
+    const amount = parseFloat(value) || 0;
+    const calculatedFee = (amount * 0.02).toFixed(2);
+    const calculatedActualAmount = (amount * 0.98).toFixed(2);
+    setFee(calculatedFee);
+    setActualAmount(calculatedActualAmount);
+  };
   const [accountName, setAccountName] = useState('**** ****');
   const [transferAccount, setTransferAccount] = useState('**** **** 1234');
   const [remittanceName, setRemittanceName] = useState('XTransfer及合作机构');
   const [arrivalTime, setArrivalTime] = useState('1~3个工作日');
   const [transactionPassword, setTransactionPassword] = useState('');
+  const [recipientAddress, setRecipientAddress] = useState('');
+  const [selectedStablecoin, setSelectedStablecoin] = useState('USDT');
 
   // 原有数据请求逻辑（保留）
   useEffect(() => {
@@ -95,17 +106,47 @@ const Transfer: React.FC = () => {
 
       {/* 步骤引导条 */}
       <div style={styles.stepsBar}>
-        <div style={styles.stepItem}>选择账户</div>
-        <div style={{ ...styles.stepItem, ...styles.activeStepItem }}>输入金额</div>
-        <div style={styles.stepItem}>确认信息</div>
+        <div style={styles.stepItem}>（1）选择账户</div>
+        <div style={{ ...styles.stepItem, ...styles.activeStepItem }}>（2）输入金额</div>
+        <div style={styles.stepItem}>（3）确认信息</div>
       </div>
 
       {/* 表单卡片 */}
       <div style={styles.formCard}>
+        {/* 收款方链上地址 */}
+        <div style={styles.infoRow}>
+          <span style={styles.label}>收款方链上地址</span>
+          <input
+            type="text"
+            value={recipientAddress}
+            onChange={(e) => setRecipientAddress(e.target.value)}
+            style={styles.amountInput}
+          />
+        </div>
+
+        {/* 稳定币币种 */}
+        <div style={styles.infoRow}>
+          <span style={styles.label}>稳定币币种</span>
+          <select
+            value={selectedStablecoin}
+            onChange={(e) => setSelectedStablecoin(e.target.value)}
+            style={styles.formSelect}
+          >
+            <option value="USDT">USDT</option>
+            <option value="USDC">USDC</option>
+            <option value="EURC">EURC</option>
+          </select>
+        </div>
+
         {/* 转账金额信息 */}
         <div style={styles.infoRow}>
           <span style={styles.label}>转账金额</span>
-          <span style={styles.value}>{transferAmount} USD</span>
+          <input
+            type="text"
+            value={transferAmount}
+            onChange={(e) => handleTransferAmountChange(e.target.value)}
+            style={{ ...styles.amountInput, textAlign: 'right' }}
+          />
         </div>
         <div style={styles.infoRow}>
           <span style={styles.label}>手续费</span>
@@ -320,7 +361,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: '#333',
   },
   formSelect: {
-    width: '100%',
+    width: '300px',
     padding: '10px',
     fontSize: '14px',
     border: '1px solid #d9d9d9',
@@ -385,6 +426,18 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: '#666',
   },
   value: {
+    fontWeight: '500',
+  },
+  amountInput: {
+    border: '1px solid #d9d9d9',
+    borderRadius: '4px',
+    padding: '8px',
+    fontSize: '14px',
+    width: '300px',
+    outline: 'none',
+  },
+  currency: {
+    marginLeft: '8px',
     fontWeight: '500',
   },
   feeValue: {

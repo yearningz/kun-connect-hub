@@ -133,6 +133,18 @@ const Recharge: React.FC = () => {
                 <option value="ETH_ERC20">ETH_ERC20</option>
                 <option value="TRX_ERC20">TRX_ERC20</option>
               </select>
+              {/* 充值地址模块 */}
+              {selectedNetwork && (
+                <div style={styles.addressContainer}>
+                  <div style={styles.addressLabel}>充值地址</div>
+                  <div style={styles.addressValue}>xxxxxxxxxxxx</div>
+                  <div style={styles.tip}>最小充值数: 200.00 USDT</div>
+                  <div style={styles.tip}>预计到账: 12次网络确认</div>
+                  <div style={styles.warning}>
+                    此地址只可接收 {selectedCurrency}，请确认主网络是 {selectedNetwork}
+                  </div>
+                </div>
+              )}
             </div>
           </>
         ) : (
@@ -303,21 +315,21 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: '#1890ff',
     fontWeight: '600',
   },
-stepContent: {
-  marginBottom: '24px',
-},
-formGroup: {
-  marginBottom: '24px',
-},
-formLabel: {
-  display: 'block',
+  stepContent: {
+    marginBottom: '24px',
+  },
+  formGroup: {
+    marginBottom: '24px',
+  },
+  formLabel: {
+    display: 'block',
     marginBottom: '8px',
     fontWeight: '500',
     fontSize: '14px',
     color: '#333',
-},
-formSelect: {
-  width: '100%',
+  },
+  formSelect: {
+    width: '100%',
     padding: '10px',
     fontSize: '14px',
     border: '1px solid #d9d9d9',
@@ -327,26 +339,55 @@ formSelect: {
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'right 10px center',
     backgroundSize: '1em',
-},
-stepButtons: {
-  display: 'flex',
+  },
+  stepButtons: {
+    display: 'flex',
     justifyContent: 'flex-end',
     gap: '12px',
-},
-navButton: {
-  padding: '10px 20px',
+  },
+  navButton: {
+    padding: '10px 20px',
     fontSize: '14px',
     border: '1px solid #1890ff',
     borderRadius: '4px',
     cursor: 'pointer',
     backgroundColor: '#fff',
     color: '#1890ff',
-},
-disabledButton: {
-  color: '#999',
+  },
+  disabledButton: {
+    color: '#999',
     borderColor: '#999',
     cursor: 'not-allowed',
-},
+  },
+  addressContainer: {
+    marginTop: '16px',
+    padding: '16px',
+    backgroundColor: '#f9f9f9',
+    borderRadius: '4px',
+    border: '1px solid #e8e8e8',
+  },
+  addressLabel: {
+    fontWeight: '500',
+    marginBottom: '8px',
+    color: '#333',
+    fontSize: '16px',
+  },
+  addressValue: {
+    fontFamily: 'monospace',
+    marginBottom: '16px',
+    color: '#1890ff',
+    fontSize: '16px',
+  },
+  tip: {
+    fontSize: '14px',
+    color: '#666',
+    marginBottom: '8px',
+  },
+  warning: {
+    fontSize: '14px',
+    color: '#f00',
+    marginBottom: '16px',
+  },
 };
 
 
