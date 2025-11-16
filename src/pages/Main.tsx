@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 
 import {useNavigate} from "react-router-dom";
+import DataService from "@/api/services/data-service.ts";
+import {Alert} from "@/components/ui/alert.tsx";
+import {AuthService} from "@/api";
 
 // 定义类型
 interface CurrencyRate {
@@ -23,6 +26,40 @@ const Main: React.FC = () => {
   // 模拟数据
   const navigate = useNavigate();
   const [balance, setBalance] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [accountCardsData, setAccountCardsData] = useState([
+    {
+      bank: '摩根大通银行香港分行',
+      paymentRegion: '全球',
+      currencies: ['人民币', '美元'],
+      openingTime: '实时',
+      paymentMethod: '仅支持SWIFT/CIPS',
+      accountType: 'normal',
+      isOpened: false, // 初始状态为未开通
+      onChainAddress: '0x1234567890abcdef' // 示例链上地址
+    },
+    {
+      bank: '花旗银行香港分行',
+      paymentRegion: '全球',
+      currencies: ['人民币', '美元'],
+      openingTime: '实时',
+      paymentMethod: '仅支持SWIFT/CIPS',
+      accountType: 'normal',
+      isOpened: false,
+      onChainAddress: '0x1234567890abcdef'
+    },
+    {
+      bank: '以太坊链上开户',
+      paymentRegion: '全球',
+      currencies: ['USDT', 'USDC', 'DAI'],
+      openingTime: '实时',
+      paymentMethod: '以太坊链上转账',
+      accountType: 'blockChain',
+      isOpened: false,
+      onChainAddress: '0x1234567890abcdef'
+    }
+  ]);
 
   useEffect(() => {
     const fetchBalance = async () => {
@@ -46,9 +83,50 @@ const Main: React.FC = () => {
     // 这里可以添加点击后的逻辑，例如跳转到用户页面或显示用户菜单
   };
 
-  const handleOpenButtonClick = () => {
-    alert('开通按钮被点击');
-    // 添加你的逻辑，例如跳转页面或调用 API
+  /*setIsLoading(true);
+  try {
+    const response = await AuthService.login({
+      "phoneNumber": "18501667177",
+      "countryCode": "86",
+      "password": "abc123456"
+    });
+    console.log(response);
+    setIsLoading(false);
+    // 登录成功，保存 token
+    localStorage.setItem('auth_token', response.data.userId);
+    toast({
+      title: "登录成功",
+      description: "欢迎回来！",
+    });
+    navigate("/main");
+
+  } catch (error) {
+    setIsLoading(false);
+    // 错误已由拦截器统一处理
+  }*/
+
+  const handleOpenButtonClick = async (index: number) => {
+    setIsLoading(true);
+    const authToken = localStorage.getItem('auth_token') || '';
+    try{
+      const response = await DataService.getBlockChainAccount({
+        "userId": authToken,
+        "chainType": 'ethereum'
+      });
+      const updatedAccounts = [...accountCardsData];
+      if(updatedAccounts[index].accountType === 'blockChain'){
+        updatedAccounts[index].onChainAddress = response.data?.address || '开通失败';
+        localStorage.setItem('ethereum_address', response.data?.address || '');
+        updatedAccounts[index].isOpened = true;
+        setAccountCardsData(updatedAccounts);
+      }else{
+        alert('普通账户暂不支持开通');
+      }
+    }catch(error){
+      console.log(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const [currencyRates, setCurrencyRates] = useState<CurrencyRate[]>([]);
@@ -56,19 +134,24 @@ const Main: React.FC = () => {
   useEffect(() => {
     const fetchCurrencyRates = async () => {
       try {
-        //const response = await fetch('https://api.example.com/currency-rates');
-        //const data = await response.json();
-        const currencyRates: CurrencyRate[] = [
-          { pair: 'BTC/USDT', price: 0.99995, change: 0.04 },
-          { pair: 'BTC/USDT', price: 7.777, change: -0.07 },
-          { pair: 'USDT/USDC', price: 7.777, change: -0.07 }
-        ];
-        setCurrencyRates(currencyRates);
+        const fetchRate = [
+          {token1: "USDT", token2: "USD"},
+          {token1: "USDT", token2: "BTC"},
+        ]
+        const fetchRates = await DataService.getCurrencyRates({
+          tokens: fetchRate,
+        })
+        const rates = fetchRates.data?.map(item => ({
+          pair: `${item.token1}/${item.token2}`,
+          price: item.rate,
+          change: 0, // 假设没有提供变化数据
+        })) || [];
+        setCurrencyRates(rates);
+        //console.log(fetchRates)
       } catch (error) {
         console.error('Failed to fetch currency rates:', error);
       }
-    };
-
+    }
     fetchCurrencyRates();
   }, []);
 
@@ -104,7 +187,16 @@ const Main: React.FC = () => {
   });
 
   return (
-    <div style={styles.container}>
+    <>
+      {isLoading && (
+        <div style={styles.loadingOverlay}>
+          <div style={styles.loadingContent}>
+            {/*<div style={styles.spinner}></div>*/}
+            <p style={styles.loadingText}>正在开通账户，请稍候...</p>
+          </div>
+        </div>
+      )}
+      <div style={styles.container}>
       {/* 顶部导航栏 */}
       <header style={styles.header}>
         <div style={styles.logo}>KUN</div>
@@ -163,32 +255,10 @@ const Main: React.FC = () => {
               <h3 style={styles.sectionTitle}>账户信息</h3>
             </div>
             <div style={styles.accountCards}>
-              {[
-                {
-                  bank: '摩根大通银行香港分行',
-                  paymentRegion: '全球',
-                  currencies: ['人民币', '美元', 'USDT', 'USDC'],
-                  openingTime: '实时',
-                  paymentMethod: '仅支持SWIFT/CIPS'
-                },
-                {
-                  bank: '花旗银行香港分行',
-                  paymentRegion: '全球',
-                  currencies: ['人民币', '美元', 'USDT', 'USDC'],
-                  openingTime: '实时',
-                  paymentMethod: '仅支持SWIFT/CIPS'
-                },
-                {
-                  bank: '中国银行深圳分行',
-                  paymentRegion: '全球',
-                  currencies: ['人民币', '美元', 'USDT', 'USDC'],
-                  openingTime: '实时',
-                  paymentMethod: '仅支持SWIFT/CIPS'
-                }
-              ].map((account, index) => (
+              {accountCardsData.map((account, index) => (
                 <div key={index} style={styles.accountCard}>
                   <div style={styles.accountCardHeader}>
-                    <h4 style={styles.accountBank}>{account.bank}</h4>
+                    <h4 style={{...styles.accountBank,color: account.accountType === 'blockChain' ? '#FF9966' : '#007BFF'}}>{account.bank}</h4>
                   </div>
                   <div style={styles.accountCardBody}>
                     <div style={styles.accountInfo}>
@@ -196,10 +266,10 @@ const Main: React.FC = () => {
                       <span>{account.paymentRegion}</span>
                     </div>
                     <div style={styles.accountInfo}>
-                      <span style={styles.accountLabel}>收款币种:</span>
+                      <span style={styles.accountLabel}>{account.accountType === 'normal' ? '收款币种:' : '支持币种:'}</span>
                       <div style={styles.currencyList}>
                         {account.currencies.map((currency, idx) => (
-                          <span key={idx} style={styles.currencyItem}>{currency}</span>
+                          <span key={idx} style={{...styles.currencyItem,color: account.accountType === 'blockChain' ? '#FF9966' : '#007BFF'}}>{currency}</span>
                         ))}
                       </div>
                     </div>
@@ -211,7 +281,23 @@ const Main: React.FC = () => {
                       <span style={styles.accountLabel}>收款方式:</span>
                       <span>{account.paymentMethod}</span>
                     </div>
-                    <button style={styles.openButton} onClick={handleOpenButtonClick}>开通</button>
+                    {account.isOpened && (
+                      <div style={styles.accountInfo}>
+                        <span style={styles.accountLabel}>链上地址:</span>
+                        <span style={{color: "#FF9966"}}>{account.onChainAddress}</span>
+                      </div>
+                    )}
+                    <button
+                      style={{
+                        ...styles.openButton,
+                        backgroundColor: account.isOpened ? '#999' : (account.accountType === 'blockChain' ? '#FF9966' : '#007BFF')
+                      }}
+                      onClick={() => handleOpenButtonClick(index)}
+                      disabled={account.isOpened}
+                    >
+                      {account.isOpened ? '已开通' : '开通'}
+                    </button>
+                   {/* <button style={{...styles.openButton,backgroundColor: account.accountType === 'blockChain' ? '#FF9966' : '#007BFF'}} onClick={handleOpenButtonClick}>开通</button>*/}
                   </div>
                 </div>
               ))}
@@ -308,7 +394,7 @@ const Main: React.FC = () => {
                   <div style={styles.tableHeader}>
                     <span style={styles.tableCol}>交易币种</span>
                     <span style={styles.tableCol}>当前价格</span>
-                    <span style={styles.tableCol}>涨跌幅(1日)</span>
+                    {/*<span style={styles.tableCol}>涨跌幅(1日)</span>*/}
                   </div>
 
                   {currencyRates.map((rate, index) => (
@@ -319,12 +405,12 @@ const Main: React.FC = () => {
                         {rate.pair.split('/')[1]}
                       </span>
                       <span style={styles.tableCol}>{rate.price}</span>
-                      <span style={{
+                      {/*<span style={{
                         ...styles.tableCol,
                         color: rate.change >= 0 ? '#f56c6c' : '#67c23a'
                       }}>
                         {rate.change >= 0 ? '+' : ''}{rate.change}%
-                      </span>
+                      </span>*/}
                     </div>
                   ))}
                 </div>
@@ -334,6 +420,7 @@ const Main: React.FC = () => {
         )}
       </main>
     </div>
+    </>
   );
 };
 
@@ -550,6 +637,39 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: '#999',
     padding: '40px 0',
   },
+  loadingOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  loadingContent: {
+    backgroundColor: 'white',
+    padding: '40px',
+    borderRadius: '8px',
+    textAlign: 'center',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+  },
+  spinner: {
+    width: '40px',
+    height: '40px',
+    border: '4px solid #f3f3f3',
+    borderTop: '4px solid #1890ff',
+    borderRadius: '50%',
+    animation: 'spin 1s linear infinite',
+    margin: '0 auto 20px',
+  },
+  loadingText: {
+    fontSize: '16px',
+    color: '#333',
+    margin: 0,
+  },
   timeFilter: {
     display: 'flex',
     gap: '8px',
@@ -614,7 +734,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontSize: '18px',
     fontWeight: '600',
     margin: '0',
-    color: '#1890ff',
+    //color: '#1890ff',
   },
   accountCardBody: {
     display: 'flex',
@@ -641,7 +761,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: '4px 8px',
     borderRadius: '4px',
     fontSize: '14px',
-    color: '#1890ff',
+    //color: '#1890ff',
   },
   openButton: {
     backgroundColor: '#1890ff',

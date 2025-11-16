@@ -2,24 +2,20 @@ import { httpClient, BaseResponse } from '../http-client';
 
 // 登录请求参数
 export interface LoginRequest {
-  email: string;
-  password: string;
-}
-
-export interface LoginRequest1 {
   phoneNumber: string,
-  areaCode: string
+  countryCode: string,
+  password: string
 }
 
+interface userInfo {
+  userId: string;
+  isNewUser: boolean;
+}
 // 登录响应数据
 export interface LoginResponse {
-  token: string;
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    avatar?: string;
-  };
+  "data": userInfo,
+  "statusCode": string,
+  "msg": string
 }
 
 // 注册请求参数
@@ -55,7 +51,7 @@ export class AuthService {
    * 用户登录
    */
   static async login(data: LoginRequest): Promise<BaseResponse<LoginResponse>> {
-    return httpClient.post<LoginResponse>('/api/user', data, {
+    return httpClient.post<LoginResponse>('/api/v1/account/login', data, {
       showLoading: true,
       showError: true,
     });

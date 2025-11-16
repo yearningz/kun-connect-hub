@@ -9,7 +9,7 @@ import Register from "./pages/Register";
 import Identity from "./pages/Identity";
 import NotFound from "./pages/NotFound";
 import Main from "./pages/Main";
-import Recharge from "./pages/Recharge";
+import Recharge from "./pages/Recharge.tsx";
 import Transfer from "@/pages/Transfer.tsx";
 
 const queryClient = new QueryClient();

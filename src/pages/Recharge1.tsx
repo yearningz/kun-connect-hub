@@ -16,7 +16,7 @@ interface AssetActivity {
   status: 'pending' | 'completed' | 'failed';
 }
 
-const Recharge: React.FC = () => {
+const Recharge1: React.FC = () => {
   const navigate = useNavigate();
   // 原有业务状态（保留）
   const [balance, setBalance] = useState<number | null>(null);
@@ -29,20 +29,12 @@ const Recharge: React.FC = () => {
   const [activeStep, setActiveStep] = useState(0); // 0=选择币种&网络；1=充值详情
   const [selectedCurrency, setSelectedCurrency] = useState('USDT'); // 默认选中 USDT
   const [selectedNetwork, setSelectedNetwork] = useState(''); // 默认未选网络
-  const [ethereumAddress, setEthereumAddress] = useState(localStorage.getItem('ethereum_address') || '');
-  const [rechargeAmount, setRechargeAmount] = useState(''); // 充值金额
 
 
   // 原有事件处理函数（保留）
   const handleUserIconClick = () => {
     navigate('/identity');
   };
-
-  const handleSureClick = () => {
-    alert('确认充值');
-  };
-
-
 
   // ========== 充值页面核心渲染逻辑（替换 main 内容） ==========
   const renderRechargePage = () => (
@@ -52,28 +44,19 @@ const Recharge: React.FC = () => {
         <div
           style={{
             ...styles.stepItem,
-             ...styles.activeStepItem
+            ...(activeStep === 0 ? styles.activeStepItem : {}),
           }}
         >
-          {/*(1)选择稳定币种-->(2)输入充值金额-->(3)选择充值网络-->(4)确认充值地址-->(5)确认充值*/}
-          (1)选择稳定币种
-          <span style={{ margin: '0 0.5em', color: '#16a34a' }}>&gt;&gt;</span>
-          (2)输入充值金额
-          <span style={{ margin: '0 0.5em', color: '#16a34a' }}>&gt;&gt;</span>
-          (3)选择充值网络
-          <span style={{ margin: '0 0.5em', color: '#16a34a' }}>&gt;&gt;</span>
-          (4)确认充值地址
-          <span style={{ margin: '0 0.5em', color: '#16a34a' }}>&gt;&gt;</span>
-          (5)确认充值
+          1 选择你要充值的数字货币
         </div>
-       {/* <div
+        <div
           style={{
             ...styles.stepItem,
             ...(activeStep === 1 ? styles.activeStepItem : {}),
           }}
         >
           2 充值详情
-        </div>*/}
+        </div>
       </div>
 
       {/* 步骤内容区 */}
@@ -94,18 +77,6 @@ const Recharge: React.FC = () => {
               </select>
             </div>
 
-            {/* 充值金额输入框 */}
-            <div style={styles.formGroup}>
-              <label style={styles.formLabel}>充值金额</label>
-              <input
-                type="number"
-                style={styles.formInput}
-                value={rechargeAmount}
-                onChange={(e) => setRechargeAmount(e.target.value)}
-                placeholder="请输入充值金额"
-              />
-            </div>
-
             {/* 网络选择下拉框 */}
             <div style={styles.formGroup}>
               <label style={styles.formLabel}>网络</label>
@@ -118,19 +89,6 @@ const Recharge: React.FC = () => {
                 <option value="ETH_ERC20">ETH_ERC20</option>
                 <option value="TRX_ERC20">TRX_ERC20</option>
               </select>
-              {/* 充值地址模块 */}
-              {selectedNetwork && (
-                <div style={styles.addressContainer}>
-                  <div style={styles.addressLabel}>充值地址</div>
-                  <div style={styles.addressValue}>{ethereumAddress}</div>
-                  <div style={styles.warning}>
-                    此地址只可接收 {selectedCurrency}，请确认主网络是 {selectedNetwork}
-                  </div>
-                  <div style={styles.tip}>最小充值数: 200.00 USDT</div>
-                  <div style={styles.tip}>预计到账: 12次网络确认</div>
-
-                </div>
-              )}
             </div>
           </>
         ) : (
@@ -145,20 +103,20 @@ const Recharge: React.FC = () => {
             ...styles.navButton,
             ...(activeStep === 0 ? styles.disabledButton : {}),
           }}
-          //disabled={activeStep === 0}
-          onClick={() => navigate('/main')}
+          disabled={activeStep === 0}
+          onClick={() => setActiveStep(1)}
         >
-          取消
+          下一步
         </button>
         <button
           style={{
             ...styles.navButton,
             ...(activeStep === 1 ? styles.disabledButton : {}),
           }}
-          //disabled={activeStep === 1}
-          onClick={handleSureClick}
+          disabled={activeStep === 1}
+          onClick={() => setActiveStep(0)}
         >
-          确认
+          上一步
         </button>
       </div>
     </div>
@@ -301,21 +259,21 @@ const styles: { [key: string]: React.CSSProperties } = {
     color: '#1890ff',
     fontWeight: '600',
   },
-  stepContent: {
-    marginBottom: '24px',
-  },
-  formGroup: {
-    marginBottom: '24px',
-  },
-  formLabel: {
-    display: 'block',
+stepContent: {
+  marginBottom: '24px',
+},
+formGroup: {
+  marginBottom: '24px',
+},
+formLabel: {
+  display: 'block',
     marginBottom: '8px',
     fontWeight: '500',
     fontSize: '14px',
     color: '#333',
-  },
-  formSelect: {
-    width: '100%',
+},
+formSelect: {
+  width: '100%',
     padding: '10px',
     fontSize: '14px',
     border: '1px solid #d9d9d9',
@@ -325,69 +283,27 @@ const styles: { [key: string]: React.CSSProperties } = {
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'right 10px center',
     backgroundSize: '1em',
-  },
-  formInput: {
-    width: '100%',
-    padding: '10px',
-    fontSize: '14px',
-    border: '1px solid #d9d9d9',
-    borderRadius: '4px',
-  },
-  stepButtons: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '30px',
-  },
-  navButton: {
-    padding: '10px 20px',
+},
+stepButtons: {
+  display: 'flex',
+    justifyContent: 'flex-end',
+    gap: '12px',
+},
+navButton: {
+  padding: '10px 20px',
     fontSize: '14px',
     border: '1px solid #1890ff',
     borderRadius: '4px',
     cursor: 'pointer',
     backgroundColor: '#fff',
     color: '#1890ff',
-  },
-  disabledButton: {
-    color: '#999',
+},
+disabledButton: {
+  color: '#999',
     borderColor: '#999',
     cursor: 'not-allowed',
-  },
-  addressContainer: {
-    marginTop: '16px',
-    padding: '16px',
-    backgroundColor: '#f9f9f9',
-    borderRadius: '4px',
-    border: '1px solid #e8e8e8',
-  },
-  addressLabel: {
-    fontWeight: '500',
-    marginBottom: '8px',
-    color: '#333',
-    fontSize: '16px',
-  },
-  addressReal: {
-    fontWeight: '500',
-    marginBottom: '8px',
-    color: '#333',
-    fontSize: '16px',
-  },
-  addressValue: {
-    fontFamily: 'monospace',
-    marginBottom: '16px',
-    color: '#f00',
-    fontSize: '16px',
-  },
-  tip: {
-    fontSize: '14px',
-    color: '#666',
-    marginBottom: '8px',
-  },
-  warning: {
-    fontSize: '14px',
-    color: '#1890ff',
-    marginBottom: '16px',
-  },
+},
 };
 
 
-export default Recharge;
+export default Recharge1;

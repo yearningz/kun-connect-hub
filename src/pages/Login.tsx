@@ -18,9 +18,29 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    try {
+      const response = await AuthService.login({
+        "phoneNumber": "18501667177",
+        "countryCode": "86",
+        "password": "abc123456"
+      });
+      console.log(response);
+      setIsLoading(false);
+      // 登录成功，保存 token
+      localStorage.setItem('auth_token', response.data.userId);
+      toast({
+        title: "登录成功",
+        description: "欢迎回来！",
+      });
+      navigate("/main");
+
+    } catch (error) {
+      setIsLoading(false);
+      // 错误已由拦截器统一处理
+    }
 
     // 模拟登录 - 实际应用需要后端API
-    setTimeout(() => {
+    /*setTimeout(() => {
       if (email && password) {
         toast({
           title: "登录成功",
@@ -35,27 +55,7 @@ const Login = () => {
         });
       }
       setIsLoading(false);
-    }, 1000);
-    /*try {
-      const response = await AuthService.login({
-        email:"user@example.com",
-        password: "password123"
-      });
-
-      if (response.success) {
-        setIsLoading(false);
-        // 登录成功，保存 token
-        localStorage.setItem('auth_token', response.data.token);
-        toast({
-          title: "登录成功",
-          description: "欢迎回来！",
-        });
-        navigate("/");
-      }
-    } catch (error) {
-      setIsLoading(false);
-      // 错误已由拦截器统一处理
-    }*/
+    }, 1000);*/
   };
 
   return (

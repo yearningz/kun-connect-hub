@@ -35,6 +35,7 @@ const Transfer: React.FC = () => {
   const [transferAmount, setTransferAmount] = useState('100.00');
   const [fee, setFee] = useState('2.00');
   const [actualAmount, setActualAmount] = useState('98.00');
+  const [fromStablecoin, setFromStablecoin] = useState('USDT'); // 转出稳定币币种
 
   const handleTransferAmountChange = (value: string) => {
     setTransferAmount(value);
@@ -124,9 +125,23 @@ const Transfer: React.FC = () => {
           />
         </div>
 
-        {/* 稳定币币种 */}
+        {/* 转出稳定币币种 */}
         <div style={styles.infoRow}>
-          <span style={styles.label}>稳定币币种</span>
+          <span style={styles.label}>转出稳定币币种</span>
+          <select
+            value={fromStablecoin}
+            onChange={(e) => setFromStablecoin(e.target.value)}
+            style={styles.formSelect}
+          >
+            <option value="USDT">USDT</option>
+            <option value="USDC">USDC</option>
+            <option value="EURC">EURC</option>
+          </select>
+        </div>
+
+        {/* 转入稳定币币种 */}
+        <div style={styles.infoRow}>
+          <span style={styles.label}>转入稳定币币种</span>
           <select
             value={selectedStablecoin}
             onChange={(e) => setSelectedStablecoin(e.target.value)}
@@ -198,16 +213,16 @@ const Transfer: React.FC = () => {
       {/* 底部按钮组 */}
       <div style={styles.buttonGroup}>
         <button
-          style={{ ...styles.navButton, ...styles.prevButton }}
-          onClick={() => setCurrentStep(1)}
+          style={{ ...styles.navButton, ...styles.prevButton, flex: 1 }}
+          onClick={() => {}}
         >
-          上一步
+          报价
         </button>
         <button
-          style={{ ...styles.navButton, ...styles.nextButton }}
+          style={{ ...styles.navButton, ...styles.nextButton, flex: 1 }}
           onClick={() => setCurrentStep(3)}
         >
-          确定
+          发起转账
         </button>
       </div>
     </div>

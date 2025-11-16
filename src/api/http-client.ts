@@ -2,10 +2,9 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, AxiosError, In
 
 // 基础响应类型
 export interface BaseResponse<T = never> {
-  code: number;
   message: string;
   data: T;
-  success: boolean;
+  code: string;
 }
 
 // 请求配置接口
@@ -25,7 +24,8 @@ class HttpClient {
 
   constructor(baseURL?: string) {
     //this.baseURL = "http://dev-cn.your-api-server.com/api";
-    this.baseURL = "http://127.0.0.1:4523/m1/7353622-7084427-default/"
+    //this.baseURL = "http://127.0.0.1:4523/m1/7353622-7084427-default/"
+    this.baseURL = "http://127.0.0.1:4523/m1/7330239-7060011-default"
 
     this.instance = axios.create({
       baseURL: this.baseURL,
@@ -129,7 +129,12 @@ class HttpClient {
     // eslint-disable-next-line no-useless-catch
     try {
       const response = await this.instance.request<BaseResponse<T>>(config);
-      return response.data;
+      console.log(response)
+      return {
+        message: response.data.message,
+        data: response.data.data,
+        code: response.data.code,
+      };
     } catch (error) {
       throw error;
     }
