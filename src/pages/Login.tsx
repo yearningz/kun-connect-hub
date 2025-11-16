@@ -27,7 +27,7 @@ const Login = () => {
       console.log(response);
       setIsLoading(false);
       // 登录成功，保存 token
-      localStorage.setItem('auth_token', response.data.userId);
+      localStorage.setItem('userId', response.data.userId);
       toast({
         title: "登录成功",
         description: "欢迎回来！",

@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import Main from "./pages/Main";
 import Recharge from "./pages/Recharge.tsx";
 import Transfer from "@/pages/Transfer.tsx";
+import TransferResult from "@/pages/TransferResult.tsx";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/main" element={<Main />} />
           <Route path="/recharge" element={<Recharge />} />
           <Route path="/transfer" element={<Transfer />} />
+          <Route path="/transferResult" element={<TransferResult />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

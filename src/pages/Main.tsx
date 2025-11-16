@@ -78,36 +78,14 @@ const Main: React.FC = () => {
   const [activeNav, setActiveNav] = useState<'overview' | 'account' | 'trade' | 'payment' | 'finance' | 'tools'>('overview');
 
   const handleUserIconClick = () => {
-    //console.log('用户图标被点击');
+
     navigate('/identity');
     // 这里可以添加点击后的逻辑，例如跳转到用户页面或显示用户菜单
   };
 
-  /*setIsLoading(true);
-  try {
-    const response = await AuthService.login({
-      "phoneNumber": "18501667177",
-      "countryCode": "86",
-      "password": "abc123456"
-    });
-    console.log(response);
-    setIsLoading(false);
-    // 登录成功，保存 token
-    localStorage.setItem('auth_token', response.data.userId);
-    toast({
-      title: "登录成功",
-      description: "欢迎回来！",
-    });
-    navigate("/main");
-
-  } catch (error) {
-    setIsLoading(false);
-    // 错误已由拦截器统一处理
-  }*/
-
   const handleOpenButtonClick = async (index: number) => {
     setIsLoading(true);
-    const authToken = localStorage.getItem('auth_token') || '';
+    const authToken = localStorage.getItem('userId') || '';
     try{
       const response = await DataService.getBlockChainAccount({
         "userId": authToken,

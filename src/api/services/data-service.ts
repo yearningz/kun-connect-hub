@@ -1,12 +1,6 @@
 import { httpClient, BaseResponse } from '../http-client';
+import {CancelToken} from "axios";
 
-// 用户列表查询参数
-export interface UserQueryParams {
-  page?: number;
-  pageSize?: number;
-  search?: string;
-  status?: 'active' | 'inactive';
-}
 
 export interface CurrencyRateReq {
   tokens?: [];
@@ -43,6 +37,93 @@ export interface BlockchainAccountResp {
   message: string;
 }
 
+
+export interface ExchangePriceReq {
+  "tokenASymbol": string,
+  "tokenBSymbol": string,
+  "amount": string
+}
+
+export interface  ExchangePriceRespItem {
+  interface: string,
+  "tokenAAddress": string,
+  "tokenBAddress": string,
+  "tokenASymbol": string,
+  "tokenBSymbol": string,
+  "inputAmount": string,
+  "estimatedOutput": string,
+  "exchangeRate": string,
+  "path": string
+}
+export interface ExchangePriceResp {
+  "data": ExchangePriceRespItem[]
+  "statusCode": string,
+  "msg": string
+}
+
+export interface TransferReq {
+  "fromUserId": string,
+  "toUserId": string,
+  "toAddress": string,
+  "chainType": string,
+  "tokenBSymbol": string,
+  "amount": string
+}
+
+export interface TransferRespItem {
+  "txHash": string,
+  "status": string,
+  "fromAddress": string,
+  "toAddress": string,
+  "inputToken": string,
+  "outputToken": string,
+  "inputTokenSymbol": string,
+  "outputTokenSymbol": string,
+  "inputAmount": string,
+  "outputAmount": string,
+  "actualRate": string,
+  "gasCost": string,
+  "blockNumber": string
+}
+
+export interface TransferResp {
+  "data": TransferRespItem,
+  "statusCode": string,
+  "msg": string
+}
+
+export interface TransferQueryReq {
+  "txHash": string,
+}
+interface TokenTransferItem {
+  "tokenAddress": string,
+  "tokenSymbol": string,
+  "fromAddress": string,
+  "toAddress": string,
+  "amount": string
+}
+
+export interface TransferResultItem {
+  "txHash": string,
+  "status": string,
+  "blockNumber": string,
+  "timestamp": string,
+  "fromAddress": string,
+  "toAddress": string,
+  "gasUsed": string,
+  "gasPrice": string,
+  "gasCost": string,
+  "inputData": string,
+  "tokenTransfers": TokenTransferItem[]
+}
+
+export interface TransferQueryResp {
+  "data": TransferResultItem
+  "statusCode": string,
+  "msg": string
+}
+
+
 /**
  * 用户服务
  */
@@ -63,6 +144,27 @@ export class DataService {
    */
   static async getBlockChainAccount(data: BlockchainAccountReq): Promise<BaseResponse<BlockchainAccountResp>> {
     return httpClient.post<BlockchainAccountResp>('/api/v1/account/registerNetwork',data,  {
+      showLoading: true,
+      showError: true,
+    });
+  }
+
+  static async getPriceQuote(data: ExchangePriceReq): Promise<BaseResponse<ExchangePriceResp>> {
+    return httpClient.post<ExchangePriceResp>('/api/v1/payment/getSwapQuote',data,  {
+      showLoading: true,
+      showError: true,
+    });
+  }
+
+  static async triggerTransfer(data: TransferReq): Promise<BaseResponse<TransferResp>> {
+    return httpClient.post<TransferResp>('/api/v1/payment/transferToken',data,  {
+      showLoading: true,
+      showError: true,
+    });
+  }
+
+  static async getTransferResult(data: TransferQueryReq): Promise<BaseResponse<TransferQueryResp>> {
+    return httpClient.post<TransferQueryResp>('/api/v1/payment/getTransactionDetail',data,  {
       showLoading: true,
       showError: true,
     });

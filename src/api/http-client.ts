@@ -44,7 +44,7 @@ class HttpClient {
     this.instance.interceptors.request.use(
       (config: InternalAxiosRequestConfig) => {
         // 添加认证 token
-        const token = localStorage.getItem('auth_token');
+        const token = localStorage.getItem('userId');
         if (token && config.headers) {
           config.headers.Authorization = `Bearer ${token}`;
         }
@@ -190,7 +190,7 @@ class HttpClient {
 
   // 设置认证 token
   public setAuthToken(token: string): void {
-    localStorage.setItem('auth_token', token);
+    localStorage.setItem('userId', token);
   }
 
   // 清除认证 token

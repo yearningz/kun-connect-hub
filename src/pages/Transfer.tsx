@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import QuoteDialog from "@/components/dialog/QuoteDialog.tsx";
+import {AuthService} from "@/api";
+import DataService, {ExchangePriceRespItem} from "@/api/services/data-service.ts";
 
 // 类型定义（保留原有业务类型）
 interface CurrencyRate {
@@ -19,16 +22,8 @@ interface AssetActivity {
 const Transfer: React.FC = () => {
   const navigate = useNavigate();
   // 原有业务状态（保留）
-  const [balance, setBalance] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState<'recent' | 'ongoing' | 'completed'>('recent');
   const [activeNav, setActiveNav] = useState<'overview' | 'account' | 'trade' | 'payment' | 'finance' | 'tools'>('overview');
-  const [currencyRates, setCurrencyRates] = useState<CurrencyRate[]>([]);
-  const [assetActivities, setAssetActivities] = useState<AssetActivity[]>([]);
 
-  // 充值页面专属状态（保留但不影响当前转账页面）
-  const [activeStep, setActiveStep] = useState(0);
-  const [selectedCurrency, setSelectedCurrency] = useState('USDT');
-  const [selectedNetwork, setSelectedNetwork] = useState('');
 
   // 转账页面专属状态
   const [currentStep, setCurrentStep] = useState(2); // 1=选择账户；2=输入金额；3=确认信息
@@ -36,6 +31,9 @@ const Transfer: React.FC = () => {
   const [fee, setFee] = useState('2.00');
   const [actualAmount, setActualAmount] = useState('98.00');
   const [fromStablecoin, setFromStablecoin] = useState('USDT'); // 转出稳定币币种
+  const [showQuoteDialog, setShowQuoteDialog] = useState(false); // 控制报价弹窗显示
+  const [isLoading, setIsLoading] = useState(false); // 控制Loading页面显示
+  const [dialogTxt, setDialogTxt] = useState("");
 
   const handleTransferAmountChange = (value: string) => {
     setTransferAmount(value);
@@ -52,52 +50,58 @@ const Transfer: React.FC = () => {
   const [transactionPassword, setTransactionPassword] = useState('');
   const [recipientAddress, setRecipientAddress] = useState('');
   const [selectedStablecoin, setSelectedStablecoin] = useState('USDT');
-
-  // 原有数据请求逻辑（保留）
-  useEffect(() => {
-    const fetchBalance = async () => {
-      try {
-        setBalance(5000); // 模拟余额数据
-      } catch (error) {
-        console.error('Failed to fetch balance:', error);
-      }
-    };
-    fetchBalance();
-  }, []);
-
-  useEffect(() => {
-    const fetchCurrencyRates = async () => {
-      try {
-        setCurrencyRates([
-          { pair: 'BTC/USDT', price: 0.99995, change: 0.04 },
-          { pair: 'BTC/USDT', price: 7.777, change: -0.07 },
-          { pair: 'USDT/USDC', price: 7.777, change: -0.07 },
-        ]);
-      } catch (error) {
-        console.error('Failed to fetch currency rates:', error);
-      }
-    };
-    fetchCurrencyRates();
-  }, []);
-
-  useEffect(() => {
-    const fetchAssetActivities = async () => {
-      try {
-        setAssetActivities([
-          { id: 1, type: 'recharge', amount: 1000, currency: 'USDT', time: '2023-10-15 14:30', status: 'completed' },
-          { id: 2, type: 'transfer', amount: 500, currency: 'USDT', time: '2023-10-14 09:15', status: 'completed' },
-          { id: 3, type: 'withdraw', amount: 200, currency: 'USDT', time: '2023-10-13 16:45', status: 'pending' },
-        ]);
-      } catch (error) {
-        console.error('Failed to fetch asset activities:', error);
-      }
-    };
-    fetchAssetActivities();
-  }, []);
+  const [quoteData, setQuoteData] = useState<ExchangePriceRespItem[]>([]);
 
   // 原有事件处理函数（保留）
   const handleUserIconClick = () => {
     navigate('/identity');
+  };
+
+  const handleShowPriceQuote = async () => {
+    setIsLoading(true);
+    setDialogTxt("正在查询报价，请稍候...");
+    try{
+      const response = await DataService.getPriceQuote({
+        "tokenASymbol": fromStablecoin,
+        "tokenBSymbol": selectedStablecoin,
+        "amount": transferAmount
+      });
+      console.log(response);
+
+      setIsLoading(false);
+      setShowQuoteDialog(true);
+      setQuoteData(response.data);
+
+    }catch (error) {
+      setIsLoading(false);
+      // 错误已由拦截器统一处理
+    }
+  };
+
+  const triggerTransfer = async () => {
+    setIsLoading(true);
+    setDialogTxt("正在提交转账请求，请稍候...");
+    try{
+      const response = await DataService.triggerTransfer({
+        "fromUserId": localStorage.getItem('userId') || '',
+        "toUserId": "9822fc98d32744ab9e97b6a1e6810426",
+        "toAddress": recipientAddress,
+        "chainType": "ETHEREUM",
+        "tokenBSymbol": fromStablecoin,
+        "amount": transferAmount
+      });
+      console.log(response);
+      setIsLoading(false);
+      navigate('/transferResult',{
+        state:{
+          txHash: response.data.txHash
+        }
+      });
+
+    }catch (error) {
+      setIsLoading(false);
+      // 错误已由拦截器统一处理
+    }
   };
 
   // ========== 转账页面核心渲染逻辑 ==========
@@ -214,80 +218,122 @@ const Transfer: React.FC = () => {
       <div style={styles.buttonGroup}>
         <button
           style={{ ...styles.navButton, ...styles.prevButton, flex: 1 }}
-          onClick={() => {}}
+          onClick={handleShowPriceQuote}
         >
           报价
         </button>
         <button
           style={{ ...styles.navButton, ...styles.nextButton, flex: 1 }}
-          onClick={() => setCurrentStep(3)}
+          onClick={triggerTransfer}
         >
           发起转账
         </button>
       </div>
+      <QuoteDialog
+        isOpen={showQuoteDialog}
+        onClose={() => setShowQuoteDialog(false)}
+        title="报价详情"
+      >
+        {renderExchangeDetail()}
+      </QuoteDialog>
     </div>
   );
 
+  const renderExchangeDetail = () => {
+    return (
+      <div style={styles.exchangeDetail}>
+        {quoteData.map((quote, index) => (
+          <div key={index} style={styles.quoteCard}>
+            <p><strong>渠道:</strong> {quote.interface}</p>
+            <p><strong>转入币种:</strong> {quote.tokenASymbol}</p>
+            <p><strong>转出币种:</strong> {quote.tokenBSymbol}</p>
+            <p><strong>输入金额:</strong> {quote.inputAmount} {quote.tokenASymbol}</p>
+            <p><strong>输出金额:</strong> {quote.estimatedOutput} {quote.tokenBSymbol}</p>
+            <p><strong>转换比率:</strong> {quote.exchangeRate}</p>
+            <p><strong>兑换路径:</strong> {quote.path}</p>
+          </div>
+        ))}
+        <button
+          style={styles.confirmButton}
+          onClick={() => setShowQuoteDialog(false)}
+        >
+          确定
+        </button>
+      </div>
+    );
+  };
+
   // ========== 渲染整体页面（保留导航栏，替换 main 内容） ==========
   return (
-    <div style={styles.container}>
-      {/* 顶部导航栏（完全保留原有逻辑） */}
-      <header style={styles.header}>
-        <div style={styles.logo}>KUN</div>
-        <nav style={styles.nav}>
-          <a
-            href="#"
-            style={activeNav === 'overview' ? { ...styles.navLink, ...styles.activeNavLink } : styles.navLink}
-            onClick={() => setActiveNav('overview')}
-          >
-            总览
-          </a>
-          <a
-            href="#"
-            style={activeNav === 'account' ? { ...styles.navLink, ...styles.activeNavLink } : styles.navLink}
-            onClick={() => setActiveNav('account')}
-          >
-            账户
-          </a>
-          <a
-            href="#"
-            style={activeNav === 'trade' ? { ...styles.navLink, ...styles.activeNavLink } : styles.navLink}
-            onClick={() => setActiveNav('trade')}
-          >
-            交易
-          </a>
-          <a
-            href="#"
-            style={activeNav === 'payment' ? { ...styles.navLink, ...styles.activeNavLink } : styles.navLink}
-            onClick={() => setActiveNav('payment')}
-          >
-            支付
-          </a>
-          <a
-            href="#"
-            style={activeNav === 'finance' ? { ...styles.navLink, ...styles.activeNavLink } : styles.navLink}
-            onClick={() => setActiveNav('finance')}
-          >
-            理财
-          </a>
-          <a
-            href="#"
-            style={activeNav === 'tools' ? { ...styles.navLink, ...styles.activeNavLink } : styles.navLink}
-            onClick={() => setActiveNav('tools')}
-          >
-            工具箱
-          </a>
-          <div style={styles.userIcon} onClick={handleUserIconClick}>
-            👤
+    <>
+      {isLoading && (
+        <div style={styles.loadingOverlay}>
+          <div style={styles.loadingContent}>
+            {/*<div style={styles.spinner}></div>*/}
+            <p style={styles.loadingText}>{dialogTxt}</p>
           </div>
-        </nav>
-      </header>
+        </div>
+      )}
+      <div style={styles.container}>
+        {/* 顶部导航栏（完全保留原有逻辑） */}
+        <header style={styles.header}>
+          <div style={styles.logo}>KUN</div>
+          <nav style={styles.nav}>
+            <a
+              href="#"
+              style={activeNav === 'overview' ? { ...styles.navLink, ...styles.activeNavLink } : styles.navLink}
+              onClick={() => setActiveNav('overview')}
+            >
+              总览
+            </a>
+            <a
+              href="#"
+              style={activeNav === 'account' ? { ...styles.navLink, ...styles.activeNavLink } : styles.navLink}
+              onClick={() => setActiveNav('account')}
+            >
+              账户
+            </a>
+            <a
+              href="#"
+              style={activeNav === 'trade' ? { ...styles.navLink, ...styles.activeNavLink } : styles.navLink}
+              onClick={() => setActiveNav('trade')}
+            >
+              交易
+            </a>
+            <a
+              href="#"
+              style={activeNav === 'payment' ? { ...styles.navLink, ...styles.activeNavLink } : styles.navLink}
+              onClick={() => setActiveNav('payment')}
+            >
+              支付
+            </a>
+            <a
+              href="#"
+              style={activeNav === 'finance' ? { ...styles.navLink, ...styles.activeNavLink } : styles.navLink}
+              onClick={() => setActiveNav('finance')}
+            >
+              理财
+            </a>
+            <a
+              href="#"
+              style={activeNav === 'tools' ? { ...styles.navLink, ...styles.activeNavLink } : styles.navLink}
+              onClick={() => setActiveNav('tools')}
+            >
+              工具箱
+            </a>
+            <div style={styles.userIcon} onClick={handleUserIconClick}>
+              👤
+            </div>
+          </nav>
+        </header>
 
-      {/* 主要内容区域：替换为转账页面 */}
-      <main style={styles.main}>
-        {renderTransferPage()}
-      </main>
-    </div>
+        {/* 主要内容区域：替换为转账页面 */}
+        <main style={styles.main}>
+          {renderTransferPage()}
+        </main>
+      </div>
+    </>
+
   );
 };
 
@@ -519,6 +565,65 @@ const styles: { [key: string]: React.CSSProperties } = {
     cursor: 'pointer',
     backgroundColor: '#1890ff',
     color: '#fff',
+  },
+  loadingOverlay: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 9999,
+  },
+  loadingContent: {
+    backgroundColor: 'white',
+    padding: '40px',
+    borderRadius: '8px',
+    textAlign: 'center',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+  },
+  spinner: {
+    width: '40px',
+    height: '40px',
+    border: '4px solid #f3f3f3',
+    borderTop: '4px solid #1890ff',
+    borderRadius: '50%',
+    animation: 'spin 1s linear infinite',
+    margin: '0 auto 20px',
+  },
+  loadingText: {
+    fontSize: '16px',
+    color: '#333',
+    margin: 0,
+  },
+  exchangeDetail: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    marginTop: '16px',
+    width: '100%',
+  },
+  quoteCard: {
+    backgroundColor: 'rgba(255, 153, 102, 0.5)',
+    borderRadius: '8px',
+    padding: '16px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+    marginBottom: '16px',
+  },
+  confirmButton: {
+    padding: '10px 20px',
+    fontSize: '14px',
+    border: '1px solid #1890ff',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    backgroundColor: '#1890ff',
+    color: '#fff',
+    marginTop: '16px',
+    alignSelf: 'center',
+    width: '200px',
   },
 };
 
