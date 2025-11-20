@@ -70,7 +70,7 @@ const Transfer: React.FC = () => {
 
       setIsLoading(false);
       setShowQuoteDialog(true);
-      setQuoteData(response.data);
+      setQuoteData(response.data.singlePathQuotes);
 
     }catch (error) {
       setIsLoading(false);
@@ -244,7 +244,7 @@ const Transfer: React.FC = () => {
       <div style={styles.exchangeDetail}>
         {quoteData.map((quote, index) => (
           <div key={index} style={styles.quoteCard}>
-            <p><strong>渠道:</strong> {quote.interface}</p>
+            <p><strong>渠道:</strong> {quote.interfaceType}</p>
             <p><strong>转入币种:</strong> {quote.tokenASymbol}</p>
             <p><strong>转出币种:</strong> {quote.tokenBSymbol}</p>
             <p><strong>输入金额:</strong> {quote.inputAmount} {quote.tokenASymbol}</p>

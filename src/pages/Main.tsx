@@ -113,19 +113,34 @@ const Main: React.FC = () => {
     const fetchCurrencyRates = async () => {
       try {
         const fetchRate = [
-          {token1: "USDT", token2: "USD"},
-          {token1: "USDT", token2: "BTC"},
+          {
+            "token1": "BTC",
+            "token2": "USD"
+          },
+          {
+            "token1": "ETH",
+            "token2": "USD"
+          },
+          {
+            "token1": "EUR",
+            "token2": "USD"
+          },
+          {
+            "token1": "USDC",
+            "token2": "USD"
+          }
         ]
         const fetchRates = await DataService.getCurrencyRates({
-          tokens: fetchRate,
+          tokenPairList: fetchRate,
         })
-        const rates = fetchRates.data?.map(item => ({
+        console.log(fetchRates);
+        const rates = fetchRates.data?.tokenPairList?.map(item => ({
           pair: `${item.token1}/${item.token2}`,
           price: item.rate,
           change: 0, // 假设没有提供变化数据
         })) || [];
         setCurrencyRates(rates);
-        //console.log(fetchRates)
+
       } catch (error) {
         console.error('Failed to fetch currency rates:', error);
       }
