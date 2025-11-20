@@ -62,15 +62,14 @@ const Transfer: React.FC = () => {
     setDialogTxt("正在查询报价，请稍候...");
     try{
       const response = await DataService.getPriceQuote({
-        "tokenASymbol": fromStablecoin,
-        "tokenBSymbol": selectedStablecoin,
+        "tokenSymbol": selectedStablecoin,
         "amount": transferAmount
       });
       console.log(response);
 
       setIsLoading(false);
       setShowQuoteDialog(true);
-      setQuoteData(response.data.singlePathQuotes);
+      setQuoteData(response.data);
 
     }catch (error) {
       setIsLoading(false);
@@ -87,7 +86,7 @@ const Transfer: React.FC = () => {
         "toUserId": "9822fc98d32744ab9e97b6a1e6810426",
         "toAddress": recipientAddress,
         "chainType": "ETHEREUM",
-        "tokenBSymbol": fromStablecoin,
+        "tokenSymbol": fromStablecoin,
         "amount": transferAmount
       });
       console.log(response);
