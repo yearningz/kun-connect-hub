@@ -67,7 +67,7 @@ const Register = () => {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-block">
-            <h1 className="text-3xl font-bold mb-2">KUN Global</h1>
+            <h1 className="text-3xl font-bold mb-2">X DEMO</h1>
           </Link>
           <p className="text-muted-foreground">创建您的账户</p>
         </div>

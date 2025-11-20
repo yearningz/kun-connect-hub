@@ -128,7 +128,7 @@ const Recharge1: React.FC = () => {
     <div style={styles.container}>
       {/* 顶部导航栏（完全保留原有逻辑） */}
       <header style={styles.header}>
-        <div style={styles.logo}>KUN</div>
+        <div style={styles.logo}>XDEMO</div>
         <nav style={styles.nav}>
           <a
             href="#"

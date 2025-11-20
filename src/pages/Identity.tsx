@@ -61,7 +61,7 @@ const Identity = () => {
       <div className="container max-w-3xl mx-auto">
         {/* 顶部导航栏 */}
         <header style={styles.header}>
-          <div style={styles.logo}>KUN</div>
+          <div style={styles.logo}>X DEMO</div>
           <nav style={styles.nav}>
             <a href="#" style={{...styles.navLink, ...styles.activeNavLink}}>总览</a>
             <a href="#" style={styles.navLink}>账户</a>

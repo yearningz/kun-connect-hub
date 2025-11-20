@@ -192,7 +192,7 @@ const Main: React.FC = () => {
       <div style={styles.container}>
       {/* 顶部导航栏 */}
       <header style={styles.header}>
-        <div style={styles.logo}>KUN</div>
+        <div style={styles.logo}>X DEMO</div>
         <nav style={styles.nav}>
           <a
             href="#"
