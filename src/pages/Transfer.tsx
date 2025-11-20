@@ -62,7 +62,8 @@ const Transfer: React.FC = () => {
     setDialogTxt("正在查询报价，请稍候...");
     try{
       const response = await DataService.getPriceQuote({
-        "tokenSymbol": selectedStablecoin,
+        "tokenASymbol": fromStablecoin,
+        "tokenBSymbol": selectedStablecoin,
         "amount": transferAmount
       });
       console.log(response);
